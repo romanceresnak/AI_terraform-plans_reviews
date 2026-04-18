@@ -54,7 +54,7 @@ def analyze_plan(plan_json):
         ]
     })
 
-    model_id = 'anthropic.claude-3-5-sonnet-20241022-v2:0'
+    model_id = 'anthropic.claude-sonnet-4-6'
     
     try:
         response = client.invoke_model(
