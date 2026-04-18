@@ -1,0 +1,28 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+      - echo Installing Terraform...
+      - yum install -y yum-utils
+      - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+      - yum -y install terraform
+      - echo Installing Python dependencies...
+      - pip install -r scripts/requirements.txt
+
+  build:
+    commands:
+      - echo Running Terraform Plan...
+      - cd terraform/infrastructure
+      - terraform init
+      - terraform plan -out=tfplan
+      - terraform show -json tfplan > ../../tfplan.json
+      - cd ../..
+      - echo Running AI Review...
+      - python scripts/ai_reviewer.py tfplan.json
+
+artifacts:
+  files:
+    - '**/*'
