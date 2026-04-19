@@ -1,51 +1,211 @@
-# AI Terraform Plan Reviewer on AWS
+# AI-Powered Terraform Plan Review
 
-This project implements an automated CI/CD pipeline that uses **Amazon Bedrock (Claude 3)** to review Terraform plans before they are deployed.
+🤖 Automated Terraform security review using AWS Bedrock and Claude AI
+
+## Overview
+
+This project implements an automated CI/CD pipeline that uses artificial intelligence to review Terraform plans before deployment. It analyzes infrastructure changes for security vulnerabilities, cost anomalies, and compliance with best practices.
+
+## Features
+
+- ✅ **Automated Security Analysis**: Every Terraform plan reviewed by Claude AI
+- ✅ **Real-time Feedback**: Instant review results in CI/CD pipeline
+- ✅ **Cost Optimization**: Detects expensive configurations and cost anomalies
+- ✅ **Compliance Checking**: Validates tagging, naming, and organizational standards
+- ✅ **Deployment Blocking**: Prevents insecure infrastructure from reaching production
+- ✅ **Educational**: Developers learn security best practices from AI feedback
 
 ## Architecture
-1. **Source**: AWS CodeCommit repository holds the Terraform code.
-2. **CI/CD**: AWS CodePipeline orchestrates the process.
-3. **Plan & Review**: AWS CodeBuild runs `terraform plan`, converts it to JSON, and executes a Python script.
-4. **AI Review**: The Python script sends the plan to **Amazon Bedrock** for analysis.
-5. **Enforcement**: If the AI rejects the plan (e.g., due to security risks), the pipeline fails, blocking deployment.
+
+```
+Developer → CodeCommit → CodePipeline → CodeBuild → Terraform Plan → AI Analysis (Claude) → APPROVED/REJECTED
+```
+
+## Technology Stack
+
+- **AWS CodeCommit**: Git repository
+- **AWS CodePipeline**: CI/CD orchestration
+- **AWS CodeBuild**: Build environment
+- **AWS Bedrock**: Managed AI service
+- **Claude Sonnet 4.5**: AI model from Anthropic
+- **Terraform**: Infrastructure as Code
+- **Python 3.11**: AI reviewer script
+
+## Quick Start
+
+### Prerequisites
+
+- AWS Account with Bedrock access
+- Claude Sonnet 4.5 model enabled in Bedrock
+- Terraform >= 1.14
+- Python >= 3.11
+
+### Installation
+
+1. Deploy CI/CD infrastructure:
+```bash
+cd terraform/cicd
+terraform init
+terraform apply
+```
+
+2. Push your code to CodeCommit:
+```bash
+git remote add origin <codecommit-url>
+git push origin main
+```
+
+3. Watch the automated review in action!
 
 ## Project Structure
-- `terraform/cicd`: Infrastructure for the pipeline (CodePipeline, CodeBuild, IAM).
-- `terraform/infrastructure`: Sample infrastructure to be reviewed.
-- `scripts/ai_reviewer.py`: The logic that interfaces with Bedrock.
-- `buildspec.yml`: Build instructions for CodeBuild.
 
-## How to Deploy
-1. **Prerequisites**:
-   - AWS CLI configured.
-   - Terraform installed.
-   - **Amazon Bedrock access**: Ensure that "Anthropic Claude 3 Sonnet" is enabled in your AWS account (Bedrock -> Model access).
-
-2. **Deploy the Pipeline**:
-   ```bash
-   cd terraform/cicd
-   terraform init
-   terraform apply
-   ```
-
-3. **Push Code to CodeCommit**:
-   - The `terraform apply` command will output the CodeCommit clone URL.
-   - Initialize a git repo in this project root, add the remote, and push:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git remote add origin <CLONE_URL>
-   git push origin main
-   ```
-
-4. **Monitor the Pipeline**:
-   - Go to the AWS CodePipeline console to see the progress.
-   - Check the CodeBuild logs to see the AI's detailed review.
-
-## Example AI Review Output
-```text
-DECISION: REJECTED
-REASON: The plan includes an S3 bucket with public access enabled and no server-side encryption defined.
-SUGGESTIONS: Enable 'block_public_access' and add an 'aws_s3_bucket_server_side_encryption_configuration' resource.
 ```
+.
+├── terraform/
+│   ├── cicd/              # CI/CD infrastructure (CodePipeline, CodeBuild)
+│   │   ├── main.tf
+│   │   ├── iam.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   └── infrastructure/    # Example infrastructure to review
+│       └── main.tf
+├── scripts/
+│   ├── ai_reviewer.py     # AI review script
+│   └── requirements.txt
+├── buildspec.yml          # CodeBuild configuration
+├── architecture-diagram.md
+├── article.md             # Detailed technical article
+└── README.md
+```
+
+## How It Works
+
+1. **Developer pushes code** to main branch
+2. **CodePipeline triggers** automatically
+3. **CodeBuild executes**:
+   - Installs Terraform and Python dependencies
+   - Runs `terraform init`
+   - Runs `terraform plan -out=tfplan`
+   - Exports plan to JSON format
+   - Executes AI reviewer script
+4. **Python script** sends plan to AWS Bedrock
+5. **Claude AI analyzes** for:
+   - Security vulnerabilities (encryption, public access, IAM)
+   - Cost anomalies (expensive resources, deletions)
+   - Best practices (tagging, naming, compliance)
+6. **Returns decision**: APPROVED ✅ or REJECTED ❌
+7. **Build succeeds or fails** based on AI decision
+
+## Example Output
+
+### REJECTED (Security Issues)
+```
+DECISION: REJECTED
+
+REASON: Critical security vulnerabilities:
+1. Missing encryption on S3 bucket
+2. No public access block configured
+3. Missing required tags
+4. No access logging enabled
+
+SUGGESTIONS:
+- Add aws_s3_bucket_server_side_encryption_configuration
+- Add aws_s3_bucket_public_access_block
+- Add required tags (Environment, Owner, Project)
+- Enable access logging
+```
+
+### APPROVED (Secure Configuration)
+```
+DECISION: APPROVED
+
+REASON: Excellent security practices:
+✅ Server-side encryption enabled (AES256)
+✅ Public access completely blocked
+✅ Comprehensive tagging for governance
+✅ Access logging configured
+✅ Versioning enabled
+
+SUGGESTIONS:
+- Consider KMS encryption for enhanced security
+- Implement lifecycle policies for cost optimization
+```
+
+## Cost
+
+- **AWS Bedrock (Claude Sonnet 4.5)**: ~$0.03 per review
+- **AWS CodeBuild**: ~$0.025 per build (5 minutes)
+- **Total**: ~$5.50/month for 100 deployments
+
+**ROI**: Positive after catching just ONE security issue
+
+## Configuration
+
+### Enable Bedrock Model Access
+1. AWS Console → Bedrock → Model access
+2. Enable "Claude Sonnet 4.5"
+3. Confirm access
+
+### Customize AI Reviewer
+
+Edit `scripts/ai_reviewer.py` to customize:
+- Security rules
+- Compliance requirements
+- Cost thresholds
+- Custom prompts
+
+## Best Practices
+
+The AI checks for:
+
+### Security
+- Encryption at rest and in transit
+- Public access configurations
+- IAM policies and roles
+- Security group rules
+- Network isolation
+- Secrets management
+
+### Cost Optimization
+- Expensive instance types
+- Unnecessary resource deletions
+- Storage class optimization
+- Lifecycle policies
+
+### Compliance
+- Required tags (Environment, Owner, Project, CostCenter)
+- Naming conventions
+- Resource organization
+- Backup strategies
+- High availability setup
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Documentation
+
+- [Architecture Diagram](architecture-diagram.md)
+- [Detailed Technical Article](article.md)
+- [LinkedIn Post](linkedin-post.md)
+
+## License
+
+MIT License - see LICENSE file for details
+
+## Author
+
+Roman Ceres­ňák
+- AWS Hero
+- [LinkedIn](https://linkedin.com)
+- [Twitter](https://twitter.com)
+
+## Acknowledgments
+
+- AWS Bedrock team for managed AI services
+- Anthropic for Claude AI model
+- HashiCorp for Terraform
+
+---
+
+**Tags:** #AWS #Bedrock #Claude #Terraform #DevOps #AI #Security #IaC #Automation #CloudSecurity
