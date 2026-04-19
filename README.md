@@ -195,10 +195,9 @@ MIT License - see LICENSE file for details
 
 ## Author
 
-Roman Ceres­ňák
-- AWS Hero
-- [LinkedIn](https://linkedin.com)
-- [Twitter](https://twitter.com)
+Roman Ceresňák
+- AWS Community Builder
+- [LinkedIn](https://www.linkedin.com/in/roman-ceresnak/)
 
 ## Acknowledgments
 
