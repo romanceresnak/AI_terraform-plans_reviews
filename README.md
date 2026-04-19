@@ -183,12 +183,6 @@ The AI checks for:
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## Documentation
-
-- [Architecture Diagram](architecture-diagram.md)
-- [Detailed Technical Article](article.md)
-- [LinkedIn Post](linkedin-post.md)
-
 ## License
 
 MIT License - see LICENSE file for details
